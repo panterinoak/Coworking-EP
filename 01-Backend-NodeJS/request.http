@@ -1,0 +1,73 @@
+
+### ======================================
+### SISTEMA DE RESERVAS COWORKING
+### PRUEBAS API REST
+### ======================================
+
+@baseUrl = http://localhost:3000
+
+### 1. Comprobar servidor
+GET {{baseUrl}}/api/health
+
+### 2. Consultar usuarios
+GET {{baseUrl}}/api/usuarios
+
+### 3. Consultar salas
+GET {{baseUrl}}/api/salas
+
+### 4. Consultar reservas
+GET {{baseUrl}}/api/reservas
+
+### 5. CREAR UNA RESERVA
+POST {{baseUrl}}/api/reservas
+Content-Type: application/json
+
+{
+  "usuarioId": 2,
+  "salaId": 2,
+  "fechaInicio": "2026-10-28T15:00:00Z",
+  "fechaFin": "2026-10-28T16:00:00Z"
+}
+
+### 6. PROBAR CONFLICTO DE HORARIO
+POST {{baseUrl}}/api/reservas
+Content-Type: application/json
+
+{
+  "usuarioId": 3,
+  "salaId": 2,
+  "fechaInicio": "2026-10-28T15:30:00Z",
+  "fechaFin": "2026-10-28T16:30:00Z"
+}
+### 7. CREAR RESERVA Y REGISTRAR LOG EN MONGODB
+POST {{baseUrl}}/api/reservas
+Content-Type: application/json
+
+{
+  "usuarioId": 1,
+  "salaId": 3,
+  "fechaInicio": "2026-10-29T15:00:00Z",
+  "fechaFin": "2026-10-29T16:00:00Z"
+}
+
+### 8. ERROR - USUARIO INVALIDO
+POST {{baseUrl}}/api/reservas
+Content-Type: application/json
+
+{
+  "usuarioId": 0,
+  "salaId": 2,
+  "fechaInicio": "2026-10-30T10:00:00Z",
+  "fechaFin": "2026-10-30T11:00:00Z"
+}
+
+### 9. ERROR - FECHAS INCORRECTAS
+POST {{baseUrl}}/api/reservas
+Content-Type: application/json
+
+{
+  "usuarioId": 1,
+  "salaId": 3,
+  "fechaInicio": "2026-10-30T16:00:00Z",
+  "fechaFin": "2026-10-30T15:00:00Z"
+}
