@@ -1,12 +1,5 @@
-
 const coworkingDB = db.getSiblingDB("CoworkingLogs");
-
 const logs = coworkingDB.getCollection("logs");
-
-// ==========================================
-// SISTEMA DE RESERVAS COWORKING
-// CARGA INICIAL DE LOGS
-// ==========================================
 
 const datosIniciales = [
   {
@@ -38,37 +31,19 @@ const datosIniciales = [
   }
 ];
 
-// ==========================================
-// EVITAR DUPLICADOS EN LA CARGA INICIAL
-// ==========================================
-
-let insertados = 0;
-
-datosIniciales.forEach((registro) => {
-  const resultado = logs.updateOne(
-    {
-      tipoEvento: registro.tipoEvento,
-      descripcion: registro.descripcion,
-      origen: "carga_inicial"
-    },
-    {
-      $setOnInsert: registro
-    },
-    {
-      upsert: true
-    }
-  );
-
-  insertados += resultado.upsertedCount;
+// Evitar duplicar datos de prueba
+const faltantes = datosIniciales.filter((registro) => {
+  return !logs.findOne({
+    tipoEvento: registro.tipoEvento,
+    descripcion: registro.descripcion,
+    origen: registro.origen
+  });
 });
 
-// ==========================================
-// VERIFICAR REGISTROS
-// ==========================================
+if (faltantes.length > 0) {
+  logs.insertMany(faltantes);
+}
 
-print("Carga inicial de MongoDB completada");
-print("Documentos nuevos: " + insertados);
-
-print(
-  "Total de logs: " + logs.countDocuments({})
-);
+print("Carga inicial completada");
+print("Registros nuevos: " + faltantes.length);
+print("Total de logs: " + logs.countDocuments({}));
